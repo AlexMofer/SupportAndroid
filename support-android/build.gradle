@@ -1,0 +1,28 @@
+plugins {
+    id 'com.android.library'
+}
+
+android {
+    compileSdkVersion 30
+    buildToolsVersion '30.0.3'
+
+    defaultConfig {
+        //noinspection MinSdkTooLow
+        minSdkVersion 11
+        targetSdkVersion 30
+        versionCode 36
+        versionName "1.9.0"
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    compileOnly 'androidx.annotation:annotation:1.2.0'
+    compileOnly 'androidx.collection:collection:1.1.0'
+}
+
+//apply from: "maven-central-aar.gradle"
