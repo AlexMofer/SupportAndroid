@@ -86,14 +86,14 @@ public abstract class ScrollDirectionTouchListener implements OnTouchListener {
                 stateY = event.getY();
                 break;
             case MotionEvent.ACTION_MOVE:
-                if (stateY + mTouchSlop / 2 < event.getY()) {
+                if (stateY + mTouchSlop * 0.5f < event.getY()) {
                     if (state != STATE_TOP) {
                         onScrollUp();
                         state = STATE_TOP;
                     }
                     stateY = event.getY();
 
-                } else if (stateY - mTouchSlop / 2 > event.getY()) {
+                } else if (stateY - mTouchSlop * 0.5f > event.getY()) {
                     if (state != STATE_BOTTOM) {
                         onScrollDown();
                         state = STATE_BOTTOM;

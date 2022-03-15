@@ -1,5 +1,7 @@
 package com.am.tool.support.animation;
 
+import android.animation.ValueAnimator;
+import android.os.Build;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AnimationUtils;
@@ -71,7 +73,7 @@ public abstract class ViewAnimation implements Runnable {
             mReSchedulePostAnimationCallback = true;
         } else {
             mView.removeCallbacks(this);
-            Compat.postOnAnimation(mView, this);
+            postOnAnimation(mView, this);
         }
     }
 
@@ -80,7 +82,7 @@ public abstract class ViewAnimation implements Runnable {
             mReSchedulePostAnimationCallback = true;
         } else {
             mView.removeCallbacks(this);
-            Compat.postOnAnimationDelayed(mView, this, delayMillis);
+            postOnAnimationDelayed(mView, this, delayMillis);
         }
     }
 
@@ -135,7 +137,7 @@ public abstract class ViewAnimation implements Runnable {
         mInterpolator = interpolator;
     }
 
-    private class Animation {
+    private static class Animation {
         private boolean mFinished;
         private long mStartTime;
         private long mDuration;
@@ -186,6 +188,22 @@ public abstract class ViewAnimation implements Runnable {
 
         float getInterpolation() {
             return mInterpolation;
+        }
+    }
+
+    private static void postOnAnimation(View view, Runnable action) {
+        if (Build.VERSION.SDK_INT >= 16) {
+            view.postOnAnimation(action);
+        } else {
+            view.postDelayed(action, ValueAnimator.getFrameDelay());
+        }
+    }
+
+    private static void postOnAnimationDelayed(View view, Runnable action, long delayMillis) {
+        if (Build.VERSION.SDK_INT >= 16) {
+            view.postOnAnimationDelayed(action, delayMillis);
+        } else {
+            view.postDelayed(action, ValueAnimator.getFrameDelay() + delayMillis);
         }
     }
 }
