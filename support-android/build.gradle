@@ -10,8 +10,6 @@ android {
         //noinspection MinSdkTooLow
         minSdkVersion 11
         targetSdkVersion 32
-        versionCode 37
-        versionName "1.10.0"
     }
 
     compileOptions {
