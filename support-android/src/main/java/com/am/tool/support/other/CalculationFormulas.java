@@ -68,7 +68,8 @@ public class CalculationFormulas {
     }
 
     /**
-     * 计算在Android坐标系中X轴正方向与由原点与该点连线形成的线段在顺时针方向上形成的夹角角度（0~360）
+     * 计算在Android坐标系中，从(0, 0)到(x, y)连成线段，
+     * 该线段与X轴正方向顺时针形成的夹角角度（0~360）
      *
      * @param x 直角坐标系X轴坐标
      * @param y 直角坐标系Y轴坐标
@@ -114,7 +115,8 @@ public class CalculationFormulas {
     }
 
     /**
-     * 计算在Android坐标系中以(x1, y1)为原点从X轴正方向线段顺时针形成的夹角角度（0~360）
+     * 计算在Android坐标系中，以(x1, y1)为原点，从(x1, y1)到(x2, y2)连成线段，
+     * 该线段与X轴正方向顺时针形成的夹角角度（0~360）
      *
      * @param x1 x1
      * @param y1 y1
