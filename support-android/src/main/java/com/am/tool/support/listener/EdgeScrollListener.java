@@ -13,14 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.am.tool.support.listener;
 
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 
 /**
- * TODO 可以优化
  * 滚动边缘监听
  */
 @SuppressWarnings({"unused", "WeakerAccess"})
