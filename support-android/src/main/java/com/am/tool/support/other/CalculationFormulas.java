@@ -67,6 +67,23 @@ public class CalculationFormulas {
         return Math.sqrt((x - px) * (x - px) + (py - y) * (py - y));
     }
 
+    /**
+     * 获取点到直线的最短距离
+     *
+     * @param x  X坐标
+     * @param y  Y坐标
+     * @param x1 直线经过的点1的X坐标
+     * @param y1 直线经过的点1的Y坐标
+     * @param x2 直线经过的点2的X坐标
+     * @param y2 直线经过的点2的Y坐标
+     * @return 最短距离
+     */
+    public static double getDistanceLine(double x, double y,
+                                         double x1, double y1, double x2, double y2) {
+        return Math.abs((y2 - y1) * x + (x1 - x2) * y + ((x2 * y1) - (x1 * y2)))
+                / (Math.sqrt(Math.pow(y2 - y1, 2) + Math.pow(x1 - x2, 2)));
+    }
+
     // 线段与X轴正方向顺时针形成的夹角角度（0~360）
     private static double getDegreesXPositiveCW(double x, double y) {
         if (y == 0) {
