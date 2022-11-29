@@ -1,18 +1,3 @@
-/*
- * Copyright (C) 2022 AlexMofer
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.am.tool.support.graphics;
 
 import android.os.Parcel;
@@ -56,27 +41,30 @@ public class LineD implements Parcelable {
      * 点斜式
      *
      * @param k 斜率
-     * @param p 直线经过的点
+     * @param x 直线经过的点的X轴坐标
+     * @param y 直线经过的点的Y轴坐标
      */
-    public LineD(double k, PointD p) {
+    public LineD(double k, double x, double y) {
         this.k = k;
-        b = p.y - k * p.x;
+        b = y - k * x;
     }
 
     /**
      * 两点式
      *
-     * @param p1 直线经过的点1
-     * @param p2 直线经过的点2
+     * @param x1 直线经过的点1的X轴坐标
+     * @param y1 直线经过的点1的Y轴坐标
+     * @param x2 直线经过的点2的X轴坐标
+     * @param y2 直线经过的点2的Y轴坐标
      */
-    public LineD(PointD p1, PointD p2) {
-        final double v = p1.x - p2.x;
+    public LineD(double x1, double y1, double x2, double y2) {
+        final double v = x1 - x2;
         if (v != 0) {
-            this.k = (p1.y - p2.y) / v;
-            this.b = (p1.y - p1.x * k);
+            this.k = (y1 - y2) / v;
+            this.b = (y1 - x1 * k);
         } else {
             k = Double.NaN;
-            b = p1.x;
+            b = x1;
         }
     }
 
