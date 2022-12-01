@@ -39,6 +39,9 @@ public class ContextUtils {
      */
     @Nullable
     public static Activity getActivity(Context context) {
+        if (context instanceof Activity) {
+            return (Activity) context;
+        }
         while (context instanceof ContextWrapper) {
             if (context instanceof Activity) {
                 return (Activity) context;
