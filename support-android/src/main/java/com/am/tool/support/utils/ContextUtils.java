@@ -21,6 +21,7 @@ import android.content.ContextWrapper;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 
+import androidx.annotation.Dimension;
 import androidx.annotation.Nullable;
 
 /**
@@ -61,14 +62,16 @@ public class ContextUtils {
      * @return The complex floating point value multiplied by the appropriate
      * metrics depending on its unit.
      */
-    public static float getDimension(DisplayMetrics metrics, float value) {
+    public static float getDimension(DisplayMetrics metrics,
+                                     @Dimension(unit = Dimension.DP) float value) {
         return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, value, metrics);
     }
 
     /**
      * This is the same as {@link #getDimension(DisplayMetrics, float)}
      */
-    public static float getDimension(Context context, float value) {
+    public static float getDimension(Context context,
+                                     @Dimension(unit = Dimension.DP) float value) {
         return getDimension(context.getResources().getDisplayMetrics(), value);
     }
 
@@ -89,7 +92,8 @@ public class ContextUtils {
      * @return The number of pixels specified by the data and its desired
      * multiplier and units.
      */
-    public static int getDimensionPixelOffset(DisplayMetrics metrics, float value) {
+    public static int getDimensionPixelOffset(DisplayMetrics metrics,
+                                              @Dimension(unit = Dimension.DP) float value) {
         final float f = getDimension(metrics, value);
         final int res = (int) ((f >= 0) ? (f + 0.5f) : (f - 0.5f));
         if (res != 0) return res;
@@ -101,7 +105,8 @@ public class ContextUtils {
     /**
      * This is the same as {@link #getDimensionPixelOffset(DisplayMetrics, float)}
      */
-    public static int getDimensionPixelOffset(Context context, float value) {
+    public static int getDimensionPixelOffset(Context context,
+                                              @Dimension(unit = Dimension.DP) float value) {
         return getDimensionPixelOffset(context.getResources().getDisplayMetrics(), value);
     }
 
@@ -119,14 +124,16 @@ public class ContextUtils {
      * @return The number of pixels specified by the data and its desired
      * multiplier and units.
      */
-    public static int getDimensionPixelSize(DisplayMetrics metrics, float value) {
+    public static int getDimensionPixelSize(DisplayMetrics metrics,
+                                            @Dimension(unit = Dimension.DP) float value) {
         return (int) getDimension(metrics, value);
     }
 
     /**
      * This is the same as {@link #getDimensionPixelSize(DisplayMetrics, float)}
      */
-    public static int getDimensionPixelSize(Context context, float value) {
+    public static int getDimensionPixelSize(Context context,
+                                            @Dimension(unit = Dimension.DP) float value) {
         return getDimensionPixelSize(context.getResources().getDisplayMetrics(), value);
     }
 }
