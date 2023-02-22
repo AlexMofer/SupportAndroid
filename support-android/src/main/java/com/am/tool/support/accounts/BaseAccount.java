@@ -41,6 +41,64 @@ public class BaseAccount {
     }
 
     /**
+     * 设置Auth Token
+     * 注意：API 22 及以下需要{@code android.permission.AUTHENTICATE_ACCOUNTS} 权限
+     *
+     * @param token Auth Token
+     * @return 设置成功时返回true
+     */
+    @SuppressLint("MissingPermission")
+    protected static boolean setAuthToken(AccountManager manager, Account account,
+                                          String authTokenType, String token) {
+        try {
+            manager.setAuthToken(account, authTokenType, token);
+            UserDataUtils.setUserData(manager, account,
+                    KEY_TIMESTAMP_AUTH_TOKEN + authTokenType, System.currentTimeMillis());
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /**
+     * 获取Auth Token时间戳
+     *
+     * @return Auth Token时间戳
+     */
+    protected static long getAuthTokenTimestamp(AccountManager manager, Account account,
+                                                String authTokenType) {
+        return UserDataUtils.getUserData(manager, account,
+                KEY_TIMESTAMP_AUTH_TOKEN + authTokenType, 0L);
+    }
+
+    /**
+     * 获取账户管理器
+     *
+     * @return 账户管理器
+     */
+    protected AccountManager getAccountManager() {
+        return mManager;
+    }
+
+    /**
+     * 获取账户
+     *
+     * @return 账户
+     */
+    protected Account getAccount() {
+        return mAccount;
+    }
+
+    /**
+     * 获取授权Token类型
+     *
+     * @return 授权Token类型
+     */
+    protected String getAuthTokenType() {
+        return mAuthTokenType;
+    }
+
+    /**
      * 保存用户数据
      *
      * @param key   数据Key
@@ -191,15 +249,8 @@ public class BaseAccount {
      * @param token Auth Token
      * @return 设置成功时返回true
      */
-    @SuppressLint("MissingPermission")
     protected boolean setAuthToken(String token) {
-        try {
-            mManager.setAuthToken(mAccount, mAuthTokenType, token);
-            setUserData(KEY_TIMESTAMP_AUTH_TOKEN + mAuthTokenType, System.currentTimeMillis());
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
+        return setAuthToken(mManager, mAccount, mAuthTokenType, token);
     }
 
     /**
@@ -208,6 +259,6 @@ public class BaseAccount {
      * @return Auth Token时间戳
      */
     protected long getAuthTokenTimestamp() {
-        return getUserData(KEY_TIMESTAMP_AUTH_TOKEN + mAuthTokenType, 0L);
+        return getAuthTokenTimestamp(mManager, mAccount, mAuthTokenType);
     }
 }
