@@ -17,6 +17,9 @@ package com.am.tool.support.accounts;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
+import android.annotation.SuppressLint;
+
+import androidx.annotation.Nullable;
 
 import com.am.tool.support.utils.UserDataUtils;
 
@@ -26,12 +29,15 @@ import com.am.tool.support.utils.UserDataUtils;
  */
 public class BaseAccount {
 
+    private static final String KEY_TIMESTAMP_AUTH_TOKEN = "timestamp_auth_token_";
     private final AccountManager mManager;
     private final Account mAccount;
+    private final String mAuthTokenType;
 
-    public BaseAccount(AccountManager manager, Account account) {
+    public BaseAccount(AccountManager manager, Account account, String authTokenType) {
         mManager = manager;
         mAccount = account;
+        mAuthTokenType = authTokenType;
     }
 
     /**
@@ -164,5 +170,44 @@ public class BaseAccount {
      */
     protected boolean getUserData(String key, boolean defaultValue) {
         return UserDataUtils.getUserData(mManager, mAccount, key, defaultValue);
+    }
+
+    /**
+     * 获取Auth Token
+     * 注意：API 22 及以下需要{@code android.permission.AUTHENTICATE_ACCOUNTS} 权限
+     *
+     * @return Auth Token
+     */
+    @SuppressLint("MissingPermission")
+    @Nullable
+    protected String peekAuthToken() {
+        return mManager.peekAuthToken(mAccount, mAuthTokenType);
+    }
+
+    /**
+     * 设置Auth Token
+     * 注意：API 22 及以下需要{@code android.permission.AUTHENTICATE_ACCOUNTS} 权限
+     *
+     * @param token Auth Token
+     * @return 设置成功时返回true
+     */
+    @SuppressLint("MissingPermission")
+    protected boolean setAuthToken(String token) {
+        try {
+            mManager.setAuthToken(mAccount, mAuthTokenType, token);
+            setUserData(KEY_TIMESTAMP_AUTH_TOKEN + mAuthTokenType, System.currentTimeMillis());
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /**
+     * 获取Auth Token时间戳
+     *
+     * @return Auth Token时间戳
+     */
+    protected long getAuthTokenTimestamp() {
+        return getUserData(KEY_TIMESTAMP_AUTH_TOKEN + mAuthTokenType, 0L);
     }
 }
