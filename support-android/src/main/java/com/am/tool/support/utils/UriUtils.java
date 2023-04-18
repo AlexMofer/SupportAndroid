@@ -16,8 +16,12 @@
 package com.am.tool.support.utils;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
+import android.provider.OpenableColumns;
+
+import androidx.annotation.Nullable;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -92,6 +96,28 @@ public class UriUtils {
             return true;
         } catch (Throwable t) {
             return false;
+        }
+    }
+
+    /**
+     * 获取名称
+     *
+     * @param context Context
+     * @param uri     链接
+     * @return 名称
+     */
+    @Nullable
+    public static String getName(Context context, Uri uri) {
+        try (final Cursor cursor = context.getContentResolver().query(uri,
+                new String[]{OpenableColumns.DISPLAY_NAME},
+                null, null, null)) {
+            if (cursor != null && cursor.moveToFirst() && !cursor.isNull(0)) {
+                return cursor.getString(0);
+            } else {
+                return null;
+            }
+        } catch (Throwable t) {
+            return null;
         }
     }
 }
