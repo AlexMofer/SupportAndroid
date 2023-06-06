@@ -15,6 +15,8 @@
  */
 package com.am.tool.support.utils;
 
+import androidx.annotation.Nullable;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -22,8 +24,14 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.math.BigInteger;
+import java.nio.charset.Charset;
+import java.security.MessageDigest;
 
 /**
  * 文件工具类
@@ -34,6 +42,47 @@ public class FileUtils {
     private FileUtils() {
         //no instance
     }
+
+    /**
+     * 复制文件
+     *
+     * @param source 源文件
+     * @param target 目标文件
+     * @throws IOException 输入输出异常
+     */
+    public static void copyOrThrow(File source, File target) throws IOException {
+        try (final FileInputStream input = new FileInputStream(source);
+             final FileOutputStream output = new FileOutputStream(target)) {
+            StreamUtils.copy(input, output);
+        }
+    }
+
+    /**
+     * 复制文件
+     *
+     * @param source 源文件
+     * @param target 目标文件
+     * @throws IOException 输入输出异常
+     */
+    public static void copyOrThrow(InputStream source, File target) throws IOException {
+        try (final FileOutputStream output = new FileOutputStream(target)) {
+            StreamUtils.copy(source, output);
+        }
+    }
+
+    /**
+     * 复制文件
+     *
+     * @param source 源文件
+     * @param target 目标文件
+     * @throws IOException 输入输出异常
+     */
+    public static void copyOrThrow(File source, OutputStream target) throws IOException {
+        try (final FileInputStream input = new FileInputStream(source)) {
+            StreamUtils.copy(input, target);
+        }
+    }
+
 
     /**
      * 复制文件
@@ -165,7 +214,28 @@ public class FileUtils {
     public static boolean writeString(File file, String content) {
         if (content == null)
             return file.delete();
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+        try (final BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+            writer.write(content);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /**
+     * 写入字符串内容
+     *
+     * @param file    文件
+     * @param content 字符串
+     * @param cs      字符集
+     * @return 是否成功
+     */
+    public static boolean writeString(File file, String content, Charset cs) {
+        if (content == null)
+            return file.delete();
+        //noinspection IOStreamConstructor
+        try (final BufferedWriter writer = new BufferedWriter(
+                new OutputStreamWriter(new FileOutputStream(file), cs))) {
             writer.write(content);
             return true;
         } catch (Exception e) {
@@ -183,7 +253,32 @@ public class FileUtils {
         if (file == null || !file.exists() || !file.isFile()) {
             return null;
         }
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+        try (final BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            final StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                sb.append(line).append("\n");
+            }
+            return sb.toString();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
+     * 读取字符串内容
+     *
+     * @param file 文件
+     * @param cs   字符集
+     * @return 字符串
+     */
+    public static String readString(File file, Charset cs) {
+        if (file == null || !file.exists() || !file.isFile()) {
+            return null;
+        }
+        //noinspection IOStreamConstructor
+        try (final BufferedReader reader = new BufferedReader(
+                new InputStreamReader(new FileInputStream(file), cs))) {
             final StringBuilder sb = new StringBuilder();
             String line;
             while ((line = reader.readLine()) != null) {
@@ -264,5 +359,52 @@ public class FileUtils {
             return file.delete();
         }
         return false;
+    }
+
+    /**
+     * 获取文件 MD5
+     *
+     * @param file      文件
+     * @param minLength 最少长度，如：32，长度不够时最前面补0
+     * @return MD5
+     */
+    @Nullable
+    public static String getMD5(File file, int minLength) {
+        if (file == null || !file.exists()) {
+            return null;
+        }
+        //noinspection IOStreamConstructor
+        try (final InputStream input = new FileInputStream(file)) {
+            final MessageDigest md = MessageDigest.getInstance("MD5");
+            int len;
+            final byte[] buffer = new byte[1024];
+            while ((len = input.read(buffer, 0, buffer.length)) != -1) {
+                md.update(buffer, 0, len);
+            }
+            final byte[] bytes = md.digest();
+            final String str = new BigInteger(1, bytes).toString(16);
+            final StringBuilder builder = new StringBuilder();
+            if (str.length() < minLength) {
+                final int number = minLength - str.length();
+                for (int i = 0; i < number; i++) {
+                    builder.append("0");
+                }
+            }
+            builder.append(str);
+            return builder.toString();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
+     * 获取文件 MD5
+     *
+     * @param file 文件
+     * @return MD5
+     */
+    @Nullable
+    public static String getMD5(File file) {
+        return getMD5(file, 0);
     }
 }

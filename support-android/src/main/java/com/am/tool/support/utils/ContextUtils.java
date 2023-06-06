@@ -16,13 +16,17 @@
 package com.am.tool.support.utils;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.os.Build;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 
 import androidx.annotation.Dimension;
 import androidx.annotation.Nullable;
+
+import java.util.List;
 
 /**
  * Context工具
@@ -135,5 +139,30 @@ public class ContextUtils {
     public static int getDimensionPixelSize(Context context,
                                             @Dimension(unit = Dimension.DP) float value) {
         return getDimensionPixelSize(context.getResources().getDisplayMetrics(), value);
+    }
+
+    /**
+     * 杀死APP所有进程
+     *
+     * @param context Context
+     */
+    public static void killAppProcesses(Context context) {
+        final int myPid = android.os.Process.myPid();
+        final ActivityManager manager;
+        if (Build.VERSION.SDK_INT >= 23) {
+            manager = context.getSystemService(ActivityManager.class);
+        } else {
+            manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        }
+        if (manager != null) {
+            final List<ActivityManager.RunningAppProcessInfo> list =
+                    manager.getRunningAppProcesses();
+            for (ActivityManager.RunningAppProcessInfo info : list) {
+                if (info.pid != myPid) {
+                    android.os.Process.killProcess(info.pid);
+                }
+            }
+        }
+        android.os.Process.killProcess(myPid);
     }
 }
