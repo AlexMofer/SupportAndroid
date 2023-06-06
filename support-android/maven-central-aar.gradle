@@ -7,11 +7,14 @@ pp.load(project.file("/pom.properties").newDataInputStream())
 final Properties sp = new Properties()
 sp.load(project.file("../secret.properties").newDataInputStream())
 
-afterEvaluate {
+allprojects {
+    tasks.withType(JavaCompile) {
+        options.encoding = 'UTF-8'
+    }
+}
 
-    task androidJavadocs(type: Javadoc) {
-        source = android.sourceSets.main.java.source
-        failOnError false
+allprojects {
+    tasks.withType(Javadoc) {
         options {
             encoding "UTF-8"
             charSet 'UTF-8'
@@ -19,41 +22,25 @@ afterEvaluate {
             title pp.getProperty("POM_NAME")
         }
     }
+}
 
-    task androidJavadocsJar(type: Jar, dependsOn: androidJavadocs) {
-        archiveClassifier.set("javadoc")
-        from androidJavadocs.destinationDir
-    }
-
-    task androidSourcesJar(type: Jar) {
-        archiveClassifier.set("sources")
-        from android.sourceSets.main.java.source
-    }
-
-    artifacts {
-        archives androidSourcesJar
-        archives androidJavadocsJar
-    }
-
-    artifacts {
-        archives androidSourcesJar, androidJavadocsJar
-    }
-
-    if (JavaVersion.current().isJava8Compatible()) {
-        allprojects {
-            tasks.withType(Javadoc) {
-                options.addStringOption('Xdoclint:none', '-quiet')
-            }
+if (JavaVersion.current().isJava8Compatible()) {
+    allprojects {
+        tasks.withType(Javadoc) {
+            options.addStringOption('Xdoclint:none', '-quiet')
         }
     }
+}
 
-    if (JavaVersion.current().isJava9Compatible()) {
-        allprojects {
-            tasks.withType(Javadoc) {
-                options.addBooleanOption('html5', true)
-            }
+if (JavaVersion.current().isJava9Compatible()) {
+    allprojects {
+        tasks.withType(Javadoc) {
+            options.addBooleanOption('html5', true)
         }
     }
+}
+
+afterEvaluate {
 
     publishing {
         publications {
@@ -63,9 +50,6 @@ afterEvaluate {
                 groupId = pp.getProperty("POM_GROUP_ID")
                 artifactId = pp.getProperty("POM_ARTIFACT_ID")
                 version = pp.getProperty("POM_VERSION")
-
-                artifact androidSourcesJar
-                artifact androidJavadocsJar
 
                 pom {
                     name = pp.getProperty("POM_NAME")
