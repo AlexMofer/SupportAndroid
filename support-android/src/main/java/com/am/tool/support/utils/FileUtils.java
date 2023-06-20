@@ -351,12 +351,42 @@ public class FileUtils {
             if (children == null || children.length <= 0) {
                 return file.delete();
             }
+            boolean deleted = true;
             for (File child : children) {
                 if (!delete(child)) {
-                    return false;
+                    deleted = false;
                 }
             }
-            return file.delete();
+            return deleted && file.delete();
+        }
+        return false;
+    }
+
+    /**
+     * 清空文件夹
+     *
+     * @param file 文件夹
+     * @return 清空文件夹
+     */
+    public static boolean clearDirectory(File file) {
+        if (file == null) {
+            return false;
+        }
+        if (!file.exists()) {
+            return false;
+        }
+        if (file.isDirectory()) {
+            final File[] children = file.listFiles();
+            if (children == null || children.length <= 0) {
+                return true;
+            }
+            boolean clear = true;
+            for (File child : children) {
+                if (!delete(child)) {
+                    clear = false;
+                }
+            }
+            return clear;
         }
         return false;
     }
