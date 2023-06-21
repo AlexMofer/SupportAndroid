@@ -18,10 +18,12 @@ package com.am.tool.support.utils;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.ParcelFileDescriptor;
-import android.provider.OpenableColumns;
+import android.provider.DocumentsContract;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -100,6 +102,37 @@ public class UriUtils {
         }
     }
 
+    @SuppressWarnings("SameParameterValue")
+    @Nullable
+    private static String queryForString(Context context, Uri self, String column,
+                                         @Nullable String defaultValue) {
+        try (final Cursor cursor = context.getContentResolver().query(
+                self, new String[]{column}, null, null, null)) {
+            if (cursor.moveToFirst() && !cursor.isNull(0)) {
+                return cursor.getString(0);
+            } else {
+                return defaultValue;
+            }
+        } catch (Throwable t) {
+            return defaultValue;
+        }
+    }
+
+    @SuppressWarnings("SameParameterValue")
+    private static long queryForLong(Context context, Uri self, String column,
+                                     long defaultValue) {
+        try (final Cursor cursor = context.getContentResolver().query(
+                self, new String[]{column}, null, null, null)) {
+            if (cursor.moveToFirst() && !cursor.isNull(0)) {
+                return cursor.getLong(0);
+            } else {
+                return defaultValue;
+            }
+        } catch (Throwable t) {
+            return defaultValue;
+        }
+    }
+
     /**
      * 获取名称
      *
@@ -107,19 +140,11 @@ public class UriUtils {
      * @param uri     链接
      * @return 名称
      */
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Nullable
     public static String getName(Context context, Uri uri) {
-        try (final Cursor cursor = context.getContentResolver().query(uri,
-                new String[]{OpenableColumns.DISPLAY_NAME},
-                null, null, null)) {
-            if (cursor != null && cursor.moveToFirst() && !cursor.isNull(0)) {
-                return cursor.getString(0);
-            } else {
-                return null;
-            }
-        } catch (Throwable t) {
-            return null;
-        }
+        return queryForString(context, uri, DocumentsContract.Document.COLUMN_DISPLAY_NAME,
+                null);
     }
 
     /**
@@ -133,5 +158,29 @@ public class UriUtils {
         final List<String> segments = uri.getPathSegments();
         return (segments == null || segments.isEmpty()) ?
                 null : segments.get(segments.size() - 1);
+    }
+
+    /**
+     * 获取最后编辑时间
+     *
+     * @param context Context
+     * @param uri     链接
+     * @return 最后编辑时间
+     */
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    public static long lastModified(Context context, Uri uri) {
+        return queryForLong(context, uri, DocumentsContract.Document.COLUMN_LAST_MODIFIED, 0);
+    }
+
+    /**
+     * 获取文件长度
+     *
+     * @param context Context
+     * @param uri     链接
+     * @return 文件长度
+     */
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    public static long length(Context context, Uri uri) {
+        return queryForLong(context, uri, DocumentsContract.Document.COLUMN_SIZE, 0);
     }
 }
