@@ -26,6 +26,7 @@ import androidx.annotation.Nullable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.util.List;
 
 /**
  * Uri 工具
@@ -119,5 +120,18 @@ public class UriUtils {
         } catch (Throwable t) {
             return null;
         }
+    }
+
+    /**
+     * 获取名称
+     *
+     * @param uri 链接
+     * @return 名称
+     */
+    @Nullable
+    public static String getNameByPath(Uri uri) {
+        final List<String> segments = uri.getPathSegments();
+        return (segments == null || segments.isEmpty()) ?
+                null : segments.get(segments.size() - 1);
     }
 }
