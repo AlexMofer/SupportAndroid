@@ -26,6 +26,7 @@ import android.view.inputmethod.InputMethodManager;
  * Created by Alex on 2016/11/10.
  */
 @SuppressWarnings({"WeakerAccess", "unused"})
+@Deprecated
 public class InputMethodUtils {
 
     /**

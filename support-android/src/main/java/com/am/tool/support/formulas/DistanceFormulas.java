@@ -137,4 +137,98 @@ public class DistanceFormulas {
                     calculatePointToLineSegment(x2, y2, x3, y3, x4, y4));
         }
     }
+
+    /**
+     * 计算移动偏移
+     *
+     * @param distance 偏移计算结果
+     * @param downX    按下X轴坐标
+     * @param downY    按下Y轴坐标
+     * @param x        当前X轴坐标
+     * @param y        当前Y轴坐标
+     * @param limited  是否限定的
+     */
+    public static void calculateMove(float[] distance,
+                                     float downX, float downY, float x, float y,
+                                     boolean limited) {
+        if (limited) {
+            if (x == downX && y == downY) {
+                distance[0] = 0;
+                distance[1] = 0;
+            } else if (x == downX) {
+                distance[0] = 0;
+                distance[1] = y - downY;
+            } else if (y == downY) {
+                distance[0] = x - downX;
+                distance[1] = 0;
+            } else {
+                final float dx = x - downX;
+                final float dy = y - downY;
+                if (x > downX) {
+                    if (y > downY) {
+                        // 右下
+                        if (dy < dx * 0.5f) {
+                            distance[0] = dx;
+                            distance[1] = 0;
+                        } else if (dx < dy * 0.5f) {
+                            distance[0] = 0;
+                            distance[1] = dy;
+                        } else {
+                            distance[0] = distance[1] = Math.min(dx, dy);
+                        }
+                    } else {
+                        // 右上
+                        if (-dy < dx * 0.5f) {
+                            distance[0] = dx;
+                            distance[1] = 0;
+                        } else if (dx < -dy * 0.5f) {
+                            distance[0] = 0;
+                            distance[1] = dy;
+                        } else {
+                            if (dx < -dy) {
+                                distance[0] = dx;
+                                distance[1] = -dx;
+                            } else {
+                                distance[0] = -dy;
+                                distance[1] = dy;
+                            }
+                        }
+                    }
+                } else {
+                    if (y > downY) {
+                        // 左下
+                        if (dy < -dx * 0.5f) {
+                            distance[0] = dx;
+                            distance[1] = 0;
+                        } else if (-dx < dy * 0.5f) {
+                            distance[0] = 0;
+                            distance[1] = dy;
+                        } else {
+                            if (-dx < dy) {
+                                distance[0] = dx;
+                                distance[1] = -dx;
+                            } else {
+                                distance[0] = -dy;
+                                distance[1] = dy;
+                            }
+                        }
+                    } else {
+                        // 左上
+                        if (-dy < -dx * 0.5f) {
+                            distance[0] = dx;
+                            distance[1] = 0;
+                        } else if (-dx < -dy * 0.5f) {
+                            distance[0] = 0;
+                            distance[1] = dy;
+                        } else {
+                            distance[0] = distance[1] = Math.max(dx, dy);
+                        }
+                    }
+                }
+            }
+        } else {
+            distance[0] = x - downX;
+            distance[1] = y - downY;
+        }
+    }
 }

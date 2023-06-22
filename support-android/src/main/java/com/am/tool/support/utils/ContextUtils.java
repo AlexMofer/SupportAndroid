@@ -26,6 +26,7 @@ import android.util.TypedValue;
 import androidx.annotation.Dimension;
 import androidx.annotation.Nullable;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -164,5 +165,47 @@ public class ContextUtils {
             }
         }
         android.os.Process.killProcess(myPid);
+    }
+
+    /**
+     * 获取外部缓存目录
+     *
+     * @param context     Context
+     * @param useInternal 外部存储不可用时是否使用内部存储，禁用内部存储时，外部存储不可用时返回null
+     * @return 外部缓存目录
+     */
+    public static File getExternalCacheDir(Context context, boolean useInternal) {
+        File dir = context.getExternalCacheDir();
+        if (dir == null && useInternal) {
+            dir = context.getCacheDir();
+        }
+        if (dir == null) {
+            return null;
+        }
+        //noinspection ResultOfMethodCallIgnored
+        dir.mkdirs();
+        return dir;
+    }
+
+    /**
+     * 获取外部存储文件目录
+     *
+     * @param context     Context
+     * @param name        目录名称，为空时返回根目录
+     * @param useInternal 外部存储不可用时是否使用内部存储，禁用内部存储时，外部存储不可用时返回null
+     * @return 外部存储文件目录
+     */
+    public static File getExternalFilesDir(Context context, @Nullable String name,
+                                           boolean useInternal) {
+        File file = context.getExternalFilesDir(name);
+        if (file == null && useInternal) {
+            file = name == null ? context.getFilesDir() : new File(context.getFilesDir(), name);
+        }
+        if (file == null) {
+            return null;
+        }
+        //noinspection ResultOfMethodCallIgnored
+        file.mkdirs();
+        return file;
     }
 }
