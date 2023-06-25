@@ -43,7 +43,7 @@ public class InputMethodManagerUtils {
      * @param view View
      * @return 是否有执行显示动作
      */
-    private static boolean showSoftInput(View view) {
+    public static boolean showSoftInput(View view) {
         if (view == null) {
             return false;
         }
