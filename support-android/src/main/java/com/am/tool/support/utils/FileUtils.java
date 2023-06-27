@@ -398,6 +398,7 @@ public class FileUtils {
      * @param minLength 最少长度，如：32，长度不够时最前面补0
      * @return MD5
      */
+    @Deprecated
     @Nullable
     public static String getMD5(File file, int minLength) {
         if (file == null || !file.exists()) {
@@ -433,6 +434,7 @@ public class FileUtils {
      * @param file 文件
      * @return MD5
      */
+    @Deprecated
     @Nullable
     public static String getMD5(File file) {
         return getMD5(file, 0);

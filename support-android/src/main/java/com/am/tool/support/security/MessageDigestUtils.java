@@ -16,7 +16,10 @@
 package com.am.tool.support.security;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.net.Uri;
 import android.os.Build;
+import android.os.ParcelFileDescriptor;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -725,19 +728,11 @@ public class MessageDigestUtils {
     public static String getMD5(File file, int minLength) {
         if (file == null)
             return null;
-        final InputStream input;
-        try {
-            input = new FileInputStream(file);
+        try (final FileInputStream input = new FileInputStream(file)) {
+            return getMD5String(input, minLength);
         } catch (Exception e) {
             return null;
         }
-        final String md5 = getMD5String(input, minLength);
-        try {
-            input.close();
-        } catch (Exception e) {
-            // ignore
-        }
-        return md5;
     }
 
     /**
@@ -748,5 +743,42 @@ public class MessageDigestUtils {
      */
     public static String getMD5(File file) {
         return getMD5(file, 0);
+    }
+
+    /**
+     * 获取文件 MD5
+     *
+     * @param context   Context
+     * @param uri       Uri
+     * @param minLength 最少长度，如：32，长度不够时最前面补0
+     * @return MD5
+     */
+    public static String getMD5(Context context, Uri uri, int minLength) {
+        final ParcelFileDescriptor descriptor;
+        try {
+            descriptor = context.getContentResolver().openFileDescriptor(uri, "r");
+        } catch (Throwable t) {
+            return null;
+        }
+        if (descriptor == null) {
+            return null;
+        }
+        try (final ParcelFileDescriptor.AutoCloseInputStream input =
+                     new ParcelFileDescriptor.AutoCloseInputStream(descriptor)) {
+            return getMD5String(input, minLength);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
+     * 获取文件 MD5
+     *
+     * @param context Context
+     * @param uri     Uri
+     * @return MD5
+     */
+    public static String getMD5(Context context, Uri uri) {
+        return getMD5(context, uri, 0);
     }
 }
