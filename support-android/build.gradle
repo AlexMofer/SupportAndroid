@@ -38,4 +38,4 @@ dependencies {
     compileOnly 'com.google.code.gson:gson:2.10.1'
 }
 
-//apply from: "maven-central-aar.gradle"
+apply from: "maven-central-aar.gradle"

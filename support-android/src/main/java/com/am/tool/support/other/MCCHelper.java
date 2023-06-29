@@ -11,8 +11,6 @@ import com.am.tool.support.R;
  * Created by Alex on 2023/6/29.
  */
 public class MCCHelper {
-
-    public static final int MCC_UNKNOWN = 0;// Unknown network
     public static final int MCC_TEXT = 1;// Test network
     public static final int MCC_INTERNAL = 999;// Internal use
     public static final int MCC_AB = 289;// Abkhazia
@@ -117,7 +115,6 @@ public class MCCHelper {
     public static String getISO3166(Context context) {
         switch (getMCC(context)) {
             default:
-            case MCC_UNKNOWN:
             case MCC_TEXT:
             case MCC_INTERNAL:
                 return null;
