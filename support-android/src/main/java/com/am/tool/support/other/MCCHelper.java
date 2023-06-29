@@ -89,7 +89,7 @@ public class MCCHelper {
     public static final int MCC_FI = 244;// Finland
     public static final int MCC_FR = 208;// France
     public static final int MCC_GF = 742;// French Guiana (France)
-    public static final int MCC_RE = 647;// 	French Indian Ocean Territories (France)
+    public static final int MCC_RE = 647;// French Indian Ocean Territories (France)
     public static final int MCC_PF = 547;// French Polynesia (France)
     public static final int MCC_GA = 628;// Gabon
 
