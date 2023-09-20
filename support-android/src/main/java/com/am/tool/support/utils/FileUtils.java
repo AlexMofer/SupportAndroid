@@ -15,6 +15,8 @@
  */
 package com.am.tool.support.utils;
 
+import android.text.TextUtils;
+
 import androidx.annotation.Nullable;
 
 import java.io.BufferedReader;
@@ -189,6 +191,51 @@ public class FileUtils {
             return "";
         }
         return name.substring(0, index);
+    }
+
+    /**
+     * 校准文件名
+     *
+     * @param newName      新名称
+     * @param originalName 原始名称
+     * @param extension    后缀名
+     * @return 校准后的文件名
+     */
+    public static String adjustFileName(@Nullable String newName, String originalName,
+                                        @Nullable String extension) {
+        if (TextUtils.isEmpty(newName)) {
+            // 文件名为空
+            return originalName;
+        }
+        if (!TextUtils.isEmpty(extension)) {
+            // 校验后缀名
+            if (newName.indexOf('.') == -1) {
+                // 无后缀名自动追加
+                newName += "." + extension;
+            }
+            if (TextUtils.equals(newName.toLowerCase(), "." + extension)) {
+                // 后缀名错误
+                return originalName;
+            }
+        }
+        if (newName.length() > 255) {
+            // 文件名过长
+            return originalName;
+        }
+        if (newName.indexOf('\u0000') >= 0 ||
+                newName.indexOf('\\') >= 0 ||
+                newName.indexOf('/') >= 0 ||
+                newName.indexOf(':') >= 0 ||
+                newName.indexOf('*') >= 0 ||
+                newName.indexOf('?') >= 0 ||
+                newName.indexOf('"') >= 0 ||
+                newName.indexOf('<') >= 0 ||
+                newName.indexOf('>') >= 0 ||
+                newName.indexOf('|') >= 0) {
+            // 文件名包含非法字符
+            return originalName;
+        }
+        return newName;
     }
 
     /**
