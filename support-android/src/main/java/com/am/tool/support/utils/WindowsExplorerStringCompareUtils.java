@@ -15,24 +15,28 @@
  */
 package com.am.tool.support.utils;
 
+import androidx.annotation.Nullable;
+
 /**
  * Windows资源管理器排序方式工具
  * Created by Alex on 2022/5/2.
  */
 public class WindowsExplorerStringCompareUtils {
-
     private WindowsExplorerStringCompareUtils() {
         //no instance
     }
 
+
     /**
      * 比较文件夹
      *
-     * @param name1 文件夹名
-     * @param name2 文件夹名
+     * @param name1      文件夹名
+     * @param name2      文件夹名
+     * @param comparator 非数字比较器
      * @return 比较结果
      */
-    public static int compareDirectory(String name1, String name2) {
+    public static int compareDirectory(String name1, String name2,
+                                       @Nullable CharacterComparator comparator) {
         if (name1 == null && name2 == null)
             return 0;
         if (name1 == null)
@@ -53,13 +57,20 @@ public class WindowsExplorerStringCompareUtils {
             char ch2 = str[1].charAt(pos[1]);
 
             if (Character.isDigit(ch1)) {
-                result = Character.isDigit(ch2) ? compareNumbers(str, pos, len) : -1;
-            } else if (Character.isLetter(ch1)) {
-                result = Character.isLetter(ch2) ? compareOther(true, str, pos) : 1;
+                if (Character.isDigit(ch2)) {
+                    // 比较两个数字
+                    result = compareNumbers(str, pos, len);
+                } else {
+                    // 第二个非数字
+                    result = -1;
+                }
             } else {
-                result = Character.isDigit(ch2) ? 1
-                        : Character.isLetter(ch2) ? -1
-                        : compareOther(false, str, pos);
+                if (Character.isDigit(ch2)) {
+                    // 第二个为数字
+                    result = 1;
+                } else {
+                    result = compareOther(str, pos, comparator);
+                }
             }
             pos[0]++;
             pos[1]++;
@@ -112,36 +123,40 @@ public class WindowsExplorerStringCompareUtils {
         return fullLen2 - fullLen1;
     }
 
-    private static int compareOther(boolean isLetters, String[] str, int[] pos) {
+    private static int compareOther(String[] str, int[] pos,
+                                    @Nullable CharacterComparator comparator) {
         final String str1 = str[0];
         final String str2 = str[1];
         final int pos1 = pos[0];
         final int pos2 = pos[1];
-        char ch1 = str1.charAt(pos1);
-        char ch2 = str2.charAt(pos2);
-
-        if (ch1 == ch2) {
-            return 0;
-        }
-        if (isLetters) {
+        if (comparator != null) {
+            return comparator.compare(str1, pos1, str2, pos2);
+        } else {
+            char ch1 = str1.charAt(pos1);
+            char ch2 = str2.charAt(pos2);
+            if (ch1 == ch2) {
+                return 0;
+            }
             ch1 = Character.toUpperCase(ch1);
             ch2 = Character.toUpperCase(ch2);
             if (ch1 != ch2) {
                 ch1 = Character.toLowerCase(ch1);
                 ch2 = Character.toLowerCase(ch2);
             }
+            return ch1 - ch2;
         }
-        return ch1 - ch2;
     }
 
     /**
      * 比较文件
      *
-     * @param name1 文件名
-     * @param name2 文件名
+     * @param name1      文件名
+     * @param name2      文件名
+     * @param comparator 非数字比较器
      * @return 比较结果
      */
-    public static int compareFile(String name1, String name2) {
+    public static int compareFile(String name1, String name2,
+                                  @Nullable CharacterComparator comparator) {
         if (name1 == null && name2 == null)
             return 0;
         if (name1 == null)
@@ -176,9 +191,26 @@ public class WindowsExplorerStringCompareUtils {
             else
                 suffixNameO = name.substring(index + 1);
         }
-        final int result = compareDirectory(prefixName, prefixNameO);
+        final int result = compareDirectory(prefixName, prefixNameO, comparator);
         if (result != 0)
             return result;
-        return compareDirectory(suffixName, suffixNameO);
+        return compareDirectory(suffixName, suffixNameO, comparator);
+    }
+
+    /**
+     * 字符比较器
+     */
+    public interface CharacterComparator {
+
+        /**
+         * 比较
+         *
+         * @param text1  字符串1
+         * @param index1 坐标1
+         * @param text2  字符串2
+         * @param index2 坐标2
+         * @return 比较结果
+         */
+        int compare(String text1, int index1, String text2, int index2);
     }
 }

@@ -17,6 +17,8 @@ package com.am.tool.support.utils;
 
 import android.os.Build;
 
+import androidx.annotation.RequiresApi;
+
 /**
  * Char工具
  * Created by Alex on 2022/12/10.
@@ -28,21 +30,55 @@ public class CharacterUtils {
     }
 
     /**
+     * 通过UnicodeScript判断是否为中文
+     *
+     * @param c 字符
+     * @return 为中文字符时返回true
+     */
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public static boolean isChineseByScript(char c) {
+        return Character.UnicodeScript.of(c) == Character.UnicodeScript.HAN;
+    }
+
+    /**
+     * 通过UnicodeBlock判断是否为中文字符
+     *
+     * @param c 字符
+     * @return 为中文字符时返回true
+     */
+    public static boolean isChineseByBlock(char c) {
+        final Character.UnicodeBlock block = Character.UnicodeBlock.of(c);
+        if (block == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS
+                || block == Character.UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS
+                || block == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_A
+                || block == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_B
+                || block == Character.UnicodeBlock.CJK_SYMBOLS_AND_PUNCTUATION
+                || block == Character.UnicodeBlock.HALFWIDTH_AND_FULLWIDTH_FORMS
+                || block == Character.UnicodeBlock.GENERAL_PUNCTUATION) {
+            return true;
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            return block == Character.UnicodeBlock.CJK_STROKES
+                    || block == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_C
+                    || block == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_D;
+        }
+        return false;
+    }
+
+    /**
      * 判断是否为中文字符
      *
      * @param c 字符
      * @return 为中文字符时返回true
      */
     public static boolean isChinese(char c) {
-        final Character.UnicodeBlock block = Character.UnicodeBlock.of(c);
-        return block == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS
-                || block == Character.UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS
-                || block == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_A
-                || block == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_B
-                || block == Character.UnicodeBlock.CJK_SYMBOLS_AND_PUNCTUATION
-                || block == Character.UnicodeBlock.HALFWIDTH_AND_FULLWIDTH_FORMS
-                || block == Character.UnicodeBlock.GENERAL_PUNCTUATION;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            return isChineseByScript(c);
+        } else {
+            return isChineseByBlock(c);
+        }
     }
+
 
     /**
      * 判断是否为CJK字符
