@@ -54,11 +54,7 @@ public class StringResource {
             view.setText(null);
             return;
         }
-        if (resource.mRes != ResourcesCompat.ID_NULL) {
-            view.setText(resource.mRes);
-        } else {
-            view.setText(resource.mStr);
-        }
+        view.setText(resource.getString(view.getContext()));
     }
 
     /**
